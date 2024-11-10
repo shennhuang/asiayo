@@ -1,66 +1,52 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 資料庫測驗
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 題目一
 
-## About Laravel
+```sql
+SELECT 
+    b.id,
+    b.name,
+    SUM(o.amount) AS may_amount
+FROM 
+    orders o
+JOIN 
+    bnbs b ON o.bnb_id = b.id
+WHERE 
+    o.created_at BETWEEN '2023-05-01' AND '2023-05-31'
+    AND o.currency = 'TWD'
+GROUP BY 
+    b.id, b.name
+ORDER BY 
+    may_amount DESC
+LIMIT 10;
+```
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 題目二
+1. 若是因資料量過大導致 Order by 效能過慢，可以將資料分群
+2. 若是因連線數量過大導致設備無法負荷
+    - 因為過往資料變動頻度小，可使用 cache 減少 query 量
+    - 若有預算可以增加設備規格
+3. 可以使用 search engine 替代，甚至使用 databricks 類型服務
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# API 實作測驗
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1. 單一職責原則 (SRP)
+  - 每個欄位的 validator 專注於欄位驗證
+  - 
+  - 
 
-## Learning Laravel
+### 2. 開放封閉原則 (OCP)
+- **目標**：軟體應對擴展開放，對修改封閉。
+- **實踐**：
+  - 在 `OrderRequest` 的 `prepareForValidation` 方法中，將換匯邏輯獨立於 `currencyTrans` 方法。
+  - 如未來有其他預處理需求，可直接添加至此方法中，而無需更改現有邏輯。
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 3. 里氏替換原則 (LSP)
+- **目標**：任何子類別應可以替換其父類別。
+- **實踐**：
+  - 本專案邏輯的執行過程中未違反父類別的行為約定，且後續處理也不會推翻先前的驗證結果。
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 5. 依賴反轉原則 (DIP)
+- **目標**：高階模組不應依賴於低階模組；兩者都應依賴於抽象。
+- **實踐**：
+  - Controller 並未直接依賴具體的服務操作，而是通過 `use` 方式使用 `OrderService`，便於單元測試及維護。
